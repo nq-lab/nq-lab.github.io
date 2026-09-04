@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>聂绮 | 如水般的产品人</title>
+<meta name="description" content="聂绮的个人网站 - 产品经理 | AI + B端系统 | 如水平静，像河汹涌，似海包容">
+<style>
+/* ============================================================
+   设计框架：
+   - fromanother.love：全屏底图随滚动交叉淡入切换 + 编号章节
+   - icebergdoc.org：居中大标题 + 小字格言轮播的极简欢迎页
+   - 人设主线：如水平静，像河汹涌，似海包容
+============================================================ */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  /* 海水色谱（采样自用户照片） */
+  --sea-foam:   #f2f8fa;
+  --sea-mist:   #dcebf1;
+  --sea-pale:   #b8d5e2;
+  --sea-light:  #7fb3cc;
+  --sea-mid:    #3a7ea6;
+  --sea-deep:   #17527e;
+  --sea-abyss:  #0a3455;
+  --sea-night:  #062540;
+  --teal:       #3fa7a7;
+  --ink:        #eaf4f9;
+  --ink-mid:    rgba(234,244,249,0.86);
+  --ink-soft:   rgba(234,244,249,0.66);
+  --ink-mute:   rgba(234,244,249,0.45);
+  --glass:      rgba(255,255,255,0.07);
+  --glass-2:    rgba(255,255,255,0.11);
+  --glass-bd:   rgba(255,255,255,0.18);
+  --serif:      "Cormorant Garamond","Songti SC","STSong","SimSun",serif;
+  --sans:       "PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans);
+  color:var(--ink-mid);
+  line-height:1.85;
+  overflow-x:hidden;
+  background:var(--sea-night);
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:rgba(127,179,204,0.35);color:#fff}
+img{max-width:100%;display:block}
+a{text-decoration:none}
+
+/* ============================================================
+   底图框架 — fromanother 式：fixed 全屏层，随滚动交叉淡入
+============================================================ */
+.bg-stack{position:fixed;inset:0;z-index:0;overflow:hidden;background:var(--sea-night)}
+.bg-layer{
+  position:absolute;inset:-6%;
+  background-size:cover;background-position:center;
+  opacity:0;
+  transition:opacity 1.8s ease;
+  will-change:opacity,transform;
+}
+.bg-layer::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(6,37,64,0.42) 0%,rgba(6,37,64,0.30) 45%,rgba(6,37,64,0.55) 100%);
+}
+.bg-layer.on{opacity:1}
+/* 每层带不同的缓慢漂移，让底图"活"起来 */
+.bg-layer[data-for="home"]{
+  background-image:url('assets/sea-calm.jpg');
+  animation:driftA 46s ease-in-out infinite alternate;
+}
+/* 下方四层共用同一张长图 sea-about.jpg，靠轻微 filter 差异保持氛围递进 */
+.bg-layer[data-for="about"],
+.bg-layer[data-for="experience"],
+.bg-layer[data-for="projects"],
+.bg-layer[data-for="contact"]{
+  background-image:url('assets/sea-about.jpg');
+}
+.bg-layer[data-for="about"]{
+  filter:brightness(0.62) saturate(0.92);
+}
+.bg-layer[data-for="about"]::after{
+  background:linear-gradient(180deg,rgba(6,37,64,0.55) 0%,rgba(10,52,85,0.48) 50%,rgba(6,37,64,0.68) 100%);
+}
+.bg-layer[data-for="experience"]{
+  filter:brightness(0.58) saturate(0.9) hue-rotate(-4deg);
+  animation:driftB 38s ease-in-out infinite alternate;
+}
+.bg-layer[data-for="projects"]{
+  filter:brightness(0.5) saturate(0.85) hue-rotate(6deg);
+}
+.bg-layer[data-for="projects"]::after{
+  background:linear-gradient(180deg,rgba(6,37,64,0.62) 0%,rgba(6,37,64,0.55) 50%,rgba(6,37,64,0.72) 100%);
+}
+.bg-layer[data-for="contact"]{
+  filter:brightness(0.45) saturate(0.8) hue-rotate(-8deg);
+}
+.bg-layer[data-for="contact"]::after{
+  background:linear-gradient(180deg,rgba(4,20,36,0.65) 0%,rgba(6,37,64,0.78) 60%,rgba(3,14,26,0.88) 100%);
+}
+@keyframes driftA{
+  from{transform:scale(1.02) translate(0,0)}
+  to{transform:scale(1.1) translate(-1.4%,1%)}
+}
+@keyframes driftB{
+  from{transform:scale(1.08) translate(1%,0)}
+  to{transform:scale(1.02) translate(-1%,1.2%)}
+}
+/* scaleX(-1) 翻转层的漂移（合并进 transform） */
+.bg-layer[data-for="about"],.bg-layer[data-for="projects"]{animation:none}
+.bg-layer[data-for="about"].on{animation:driftFlipA 52s ease-in-out infinite alternate}
+.bg-layer[data-for="projects"].on{animation:driftFlipB 58s ease-in-out infinite alternate}
+@keyframes driftFlipA{
+  from{transform:scaleX(-1) scale(1.02)}
+  to{transform:scaleX(-1) scale(1.09) translateY(1%)}
+}
+@keyframes driftFlipB{
+  from{transform:scaleX(-1) scale(1.08) translateY(0.5%)}
+  to{transform:scaleX(-1) scale(1.02)}
+}
+
+/* 内容整体浮在底图上 */
+main{position:relative;z-index:1}
+
+/* ============================================================
+   NAV — 玻璃拟态目录
+============================================================ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(6,37,64,0.18);
+  backdrop-filter:blur(16px) saturate(140%);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  transition:background .5s;
+}
+nav.scrolled{background:rgba(6,25,40,0.55)}
+.nav-inner{
+  max-width:1100px;margin:0 auto;padding:0 28px;
+  height:62px;display:flex;align-items:center;justify-content:space-between;
+}
+.nav-logo{
+  font-family:var(--serif);font-size:19px;font-weight:500;color:#fff;
+  letter-spacing:5px;display:flex;align-items:center;gap:10px;
+}
+.nav-logo i{
+  width:9px;height:9px;border-radius:50%;display:inline-block;
+  background:radial-gradient(circle at 30% 30%,#fff,var(--sea-light));
+  box-shadow:0 0 14px rgba(127,179,204,0.7);
+}
+.nav-links{display:flex;gap:2px;list-style:none}
+.nav-links a{
+  color:rgba(255,255,255,0.72);font-size:13.5px;padding:6px 15px;
+  letter-spacing:2px;transition:color .3s;position:relative;
+}
+.nav-links a:hover{color:#fff}
+.nav-links a.active{color:#fff;font-weight:600}
+.nav-links a.active::after{
+  content:"";position:absolute;left:50%;bottom:-20px;transform:translateX(-50%);
+  width:16px;height:2px;background:var(--sea-light);
+}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:8px}
+.nav-toggle svg{display:block}
+
+/* ============================================================
+   HERO — icebergdoc 式居中欢迎页
+============================================================ */
+#home{
+  position:relative;min-height:100vh;min-height:100svh;
+  display:flex;align-items:center;justify-content:center;
+  padding:100px 24px 80px;
+}
+#hero-canvas{
+  position:fixed;left:0;right:0;bottom:0;width:100%;height:55%;
+  pointer-events:none;mix-blend-mode:screen;z-index:0;
+}
+.hero-content{position:relative;z-index:2;text-align:center;max-width:860px}
+.hero-eyebrow{
+  font-size:11px;letter-spacing:10px;color:rgba(255,255,255,0.6);
+  margin-bottom:34px;text-transform:uppercase;
+  opacity:0;animation:heroIn 1.6s .2s both;
+}
+.hero-title{
+  font-family:var(--serif);
+  font-size:clamp(34px,6.4vw,66px);font-weight:500;line-height:1.3;
+  color:#fff;letter-spacing:6px;
+  text-shadow:0 4px 44px rgba(6,37,64,0.55);
+  margin-bottom:34px;
+  opacity:0;filter:blur(8px);
+  animation:heroBlur 1.8s .5s both;
+}
+.hero-motto-box{
+  min-height:64px;margin-bottom:44px;
+  opacity:0;animation:heroIn 1.6s 1.1s both;
+}
+.hero-motto{
+  display:inline-block;position:relative;
+  font-family:var(--serif);
+  font-size:clamp(16px,2.4vw,22px);
+  color:rgba(255,255,255,0.92);letter-spacing:7px;
+  padding:0 8px;
+  transition:opacity .7s ease,transform .7s ease;
+}
+.hero-motto.out{opacity:0;transform:translateY(-10px)}
+.hero-motto::before,.hero-motto::after{
+  content:"";position:absolute;top:50%;width:34px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.45));
+}
+.hero-motto::before{left:-44px;transform:scaleX(-1)}
+.hero-motto::after{right:-44px}
+.hero-tags{
+  display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+  opacity:0;animation:heroIn 1.6s 1.35s both;
+}
+.hero-tag{
+  padding:5px 16px;font-size:12px;letter-spacing:2px;
+  color:rgba(255,255,255,0.9);
+  border:1px solid rgba(255,255,255,0.32);
+  background:rgba(255,255,255,0.09);
+  backdrop-filter:blur(6px);
+}
+@keyframes heroIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes heroBlur{from{opacity:0;filter:blur(10px);transform:translateY(16px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+.hero-scroll{
+  position:absolute;bottom:30px;left:0;right:0;
+  width:max-content;margin:0 auto;
+  z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;
+  color:rgba(255,255,255,0.78);font-size:11px;letter-spacing:4px;
+  opacity:0;animation:heroIn 1.6s 1.8s both;
+}
+.hero-scroll-line{
+  width:1px;height:36px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.85),transparent);
+  animation:pulseLine 2.6s ease-in-out infinite;
+}
+@keyframes pulseLine{0%,100%{opacity:.35}50%{opacity:1}}
+
+/* ============================================================
+   通用板块
+============================================================ */
+section{padding:120px 28px;position:relative}
+.section-inner{max-width:1040px;margin:0 auto}
+.section-head{margin-bottom:64px;display:grid;grid-template-columns:auto 1fr;gap:34px;align-items:end}
+.section-no{
+  font-family:var(--serif);font-size:clamp(58px,8vw,92px);font-weight:400;
+  color:rgba(255,255,255,0.16);line-height:0.8;letter-spacing:2px;
+  transition:color .6s;
+}
+.section-head:hover .section-no{color:rgba(127,179,204,0.5)}
+.section-head h2{
+  font-family:var(--serif);font-size:clamp(27px,4vw,36px);font-weight:500;
+  color:#fff;letter-spacing:4px;margin-bottom:8px;line-height:1.2;
+}
+.section-head .sub{
+  font-size:12px;color:var(--ink-soft);letter-spacing:5px;text-transform:uppercase;
+  display:flex;align-items:center;gap:12px;
+}
+.section-head .sub::before{
+  content:"";width:26px;height:1px;background:var(--sea-light);
+}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 1s ease,transform 1s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:.12s}
+.reveal-d2{transition-delay:.24s}
+.reveal-d3{transition-delay:.36s}
+
+/* ============================================================
+   01 ABOUT — 证件照 + 教育竖向时间轴（无卡片）
+============================================================ */
+.about-grid{display:grid;grid-template-columns:0.9fr 1.4fr;gap:64px;align-items:start}
+.about-left{position:sticky;top:110px}
+/* 证件照/头像区域：去底框，裸放 */
+.about-photo{
+  width:100%;max-width:300px;aspect-ratio:4/3;
+  margin-bottom:22px;overflow:hidden;border-radius:4px;
+  background:rgba(255,255,255,0.04);
+}
+.about-photo img{
+  width:100%;height:100%;object-fit:contain;display:block;
+  filter:drop-shadow(0 6px 20px rgba(0,0,0,0.45));
+  transition:transform .8s ease;
+}
+.about-photo:hover img{transform:scale(1.03)}
+/* 老 .id-photo 兼容（防止别处还引用） */
+.id-photo{display:none}
+.about-name{font-family:var(--serif);font-size:26px;font-weight:500;color:#fff;margin-bottom:5px;letter-spacing:4px}
+.about-role{font-size:12.5px;color:var(--ink-soft);margin-bottom:16px;letter-spacing:2px}
+.about-intro{font-size:13.5px;color:var(--ink-soft);line-height:2;margin-bottom:20px}
+.about-intro strong{color:var(--ink);font-weight:600}
+.about-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.stat{border-top:1px solid rgba(255,255,255,0.18);padding:14px 4px 4px}
+.stat-num{font-family:var(--serif);font-size:26px;font-weight:500;color:var(--sea-light);letter-spacing:1px}
+.stat-label{font-size:10.5px;color:var(--ink-soft);letter-spacing:2px;margin-top:3px}
+
+/* 教育竖向时间轴 — 纯文字节点，无卡片 */
+.edu-timeline{position:relative;padding-left:44px}
+.edu-timeline::before{
+  content:"";position:absolute;left:9px;top:10px;bottom:10px;width:1px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.45),rgba(255,255,255,0.1));
+}
+.edu-item{position:relative;padding-bottom:46px}
+.edu-item:last-child{padding-bottom:0}
+.edu-dot{
+  position:absolute;left:-40px;top:8px;width:11px;height:11px;border-radius:50%;
+  background:rgba(6,37,64,0.6);border:2px solid var(--sea-light);
+  box-shadow:0 0 0 5px rgba(127,179,204,0.14),0 0 18px rgba(127,179,204,0.4);
+}
+.edu-item:hover .edu-dot{border-color:#fff;box-shadow:0 0 0 5px rgba(127,179,204,0.22),0 0 24px rgba(127,179,204,0.6)}
+.edu-time{
+  font-size:11.5px;color:var(--sea-light);letter-spacing:3px;
+  margin-bottom:8px;font-weight:600;
+}
+.edu-school{
+  font-family:var(--serif);font-size:21px;font-weight:600;color:#fff;
+  letter-spacing:2px;margin-bottom:5px;line-height:1.4;
+}
+.edu-major{font-size:14px;color:var(--ink-mid);margin-bottom:8px;letter-spacing:1px}
+.edu-major b{color:var(--sea-light);font-weight:600}
+.edu-detail{font-size:13px;color:var(--ink-soft);line-height:1.9}
+.edu-honors{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.honor-tag{
+  padding:3px 11px;font-size:11px;letter-spacing:1px;
+  color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.22);
+  background:rgba(255,255,255,0.06);
+}
+
+/* ============================================================
+   02 EXPERIENCE — 左 Logo 导航 + 右时间轴面板
+============================================================ */
+.exp-layout{display:grid;grid-template-columns:300px 1fr;gap:56px;align-items:start}
+.exp-nav{position:sticky;top:110px;display:flex;flex-direction:column;gap:16px}
+.exp-nav-item{
+  display:flex;align-items:center;gap:16px;
+  padding:16px 18px;cursor:pointer;user-select:none;
+  background:var(--glass);border:1px solid var(--glass-bd);
+  backdrop-filter:blur(10px);
+  transition:all .45s cubic-bezier(.22,.61,.36,1);
+}
+.exp-nav-item:hover{background:var(--glass-2);transform:translateX(6px)}
+.exp-nav-item.active{
+  background:rgba(127,179,204,0.14);
+  border-color:rgba(127,179,204,0.55);
+  box-shadow:0 8px 30px rgba(6,37,64,0.4),0 0 0 1px rgba(127,179,204,0.2);
+  transform:translateX(6px);
+}
+.company-logo{
+  width:58px;height:58px;flex-shrink:0;
+  border:1px dashed rgba(255,255,255,0.38);
+  background:rgba(255,255,255,0.05);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:17px;color:rgba(255,255,255,0.75);
+  letter-spacing:1px;transition:all .4s;
+  overflow:hidden;
+}
+.company-logo.has-img{
+  background:rgba(255,255,255,0.96);
+  border:1px solid rgba(255,255,255,0.5);
+  border-radius:6px;
+  padding:4px;
+}
+.company-logo.has-img img{width:100%;height:100%;object-fit:contain;display:block}
+.company-logo.brand-text{
+  background:linear-gradient(135deg,#7fb3cc,#3a7da3);
+  border:1px solid rgba(127,179,204,0.5);
+  color:#fff;
+  font-weight:600;
+  letter-spacing:2px;
+}
+.exp-nav-item.active .company-logo{
+  border-style:solid;border-color:rgba(127,179,204,0.65);
+  color:#fff;
+  box-shadow:0 0 18px rgba(127,179,204,0.35);
+}
+.exp-nav-item.active .company-logo.has-img{
+  box-shadow:0 0 18px rgba(127,179,204,0.35),0 0 0 2px rgba(127,179,204,0.45);
+}
+.exp-nav-info{min-width:0}
+.exp-nav-company{font-size:14.5px;font-weight:600;color:#fff;letter-spacing:1px}
+.exp-nav-role{font-size:11.5px;color:var(--ink-soft);margin-top:2px;letter-spacing:1px}
+.exp-nav-time{font-size:11px;color:var(--ink-mute);margin-top:3px;letter-spacing:1px}
+.exp-nav-hint{
+  font-size:11px;color:var(--ink-mute);letter-spacing:2px;
+  padding:4px 2px 0;display:flex;align-items:center;gap:8px;
+}
+.exp-nav-hint::before{content:"";width:18px;height:1px;background:rgba(255,255,255,0.3)}
+
+/* 右侧时间轴面板 */
+.exp-panels{position:relative;min-height:400px}
+.exp-panel{display:none;scroll-margin-top:86px}
+.exp-panel.active{display:block;animation:panelIn .8s cubic-bezier(.22,.61,.36,1) both}
+@keyframes panelIn{
+  from{opacity:0;transform:translateY(28px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.exp-panel-header{
+  margin-bottom:38px;padding-bottom:20px;
+  border-bottom:1px solid rgba(255,255,255,0.14);
+}
+.exp-panel-title{font-family:var(--serif);font-size:23px;font-weight:600;color:#fff;letter-spacing:2px;margin-bottom:6px}
+.exp-panel-sub{font-size:13px;color:var(--ink-soft);letter-spacing:1px}
+.exp-panel-intro{
+  margin-bottom:34px;padding:16px 18px;
+  background:linear-gradient(135deg,rgba(127,179,204,0.10),rgba(255,255,255,0.04));
+  border-left:2px solid rgba(127,179,204,0.5);
+  border-radius:0 4px 4px 0;
+  font-size:13.5px;color:var(--ink-soft);line-height:1.85;
+}
+.exp-panel-intro b{color:var(--ink);font-weight:600}
+.exp-timeline{position:relative;padding-left:40px}
+.exp-timeline::before{
+  content:"";position:absolute;left:8px;top:8px;bottom:8px;width:1px;
+  background:linear-gradient(180deg,rgba(127,179,204,0.55),rgba(255,255,255,0.08));
+}
+.exp-node{position:relative;padding-bottom:38px}
+.exp-node:last-child{padding-bottom:0}
+.exp-node-dot{
+  position:absolute;left:-37px;top:7px;width:9px;height:9px;border-radius:50%;
+  background:var(--sea-light);
+  box-shadow:0 0 0 4px rgba(127,179,204,0.14),0 0 14px rgba(127,179,204,0.5);
+}
+.exp-node:hover .exp-node-dot{background:#fff}
+.exp-node-time{
+  font-size:11.5px;color:var(--sea-light);letter-spacing:2.5px;
+  font-weight:600;margin-bottom:6px;
+}
+.exp-node-title{font-size:15.5px;font-weight:600;color:#fff;letter-spacing:1px;margin-bottom:6px}
+.exp-node-desc{font-size:13px;color:var(--ink-soft);line-height:1.9}
+.exp-node-desc b{color:var(--ink);font-weight:600}
+.exp-metrics{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.metric{
+  padding:5px 14px;font-size:11.5px;letter-spacing:1px;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.16);color:var(--ink-mid);
+}
+.metric b{color:var(--sea-light);font-family:var(--serif);font-size:14px;font-weight:600}
+
+/* ============================================================
+   03 PROJECTS — 横向滑动作品廊
+============================================================ */
+#projects{padding-left:0;padding-right:0}
+#projects .section-head{max-width:1040px;margin-left:auto;margin-right:auto;padding:0 28px}
+.proj-wrap{position:relative}
+.proj-track{
+  display:flex;gap:26px;align-items:stretch;
+  overflow-x:auto;overflow-y:hidden;
+  scroll-snap-type:x mandatory;
+  padding:10px max(28px,calc((100vw - 1040px)/2)) 26px;
+  scrollbar-width:none;-ms-overflow-style:none;
+  cursor:grab;
+}
+.proj-track::-webkit-scrollbar{display:none}
+.proj-track.dragging{cursor:grabbing;scroll-snap-type:none}
+.proj-slide{
+  flex:0 0 min(72vw,700px);
+  scroll-snap-align:center;
+  background:var(--glass);border:1px solid var(--glass-bd);
+  backdrop-filter:blur(14px);
+  padding:18px 20px 20px;
+  transition:border-color .4s,box-shadow .4s;
+}
+.proj-slide:hover{
+  border-color:rgba(127,179,204,0.5);
+  box-shadow:0 14px 50px rgba(6,37,64,0.45);
+}
+.proj-video{
+  aspect-ratio:16/9;width:100%;
+  border:1px dashed rgba(255,255,255,0.3);
+  background:
+    radial-gradient(ellipse at 50% 120%,rgba(127,179,204,0.16),transparent 60%),
+    rgba(6,37,64,0.35);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;color:var(--ink-mute);font-size:12px;letter-spacing:3px;
+  margin-bottom:20px;position:relative;overflow:hidden;
+  transition:all .4s;
+}
+.proj-video:hover{border-color:rgba(127,179,204,0.55)}
+.proj-video .play-btn{
+  width:58px;height:58px;border-radius:50%;
+  border:1px solid rgba(255,255,255,0.4);
+  background:rgba(255,255,255,0.08);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;transition:all .4s;
+}
+.proj-video:hover .play-btn{
+  background:rgba(127,179,204,0.25);
+  box-shadow:0 0 26px rgba(127,179,204,0.45);
+  transform:scale(1.08);
+}
+/* 占位"波纹"呼吸动画 */
+.proj-video .wave-bars{display:flex;gap:5px;align-items:flex-end;height:18px}
+.proj-video .wave-bars i{
+  width:3px;background:rgba(127,179,204,0.7);border-radius:2px;
+  animation:waveBar 1.6s ease-in-out infinite;
+}
+.proj-video .wave-bars i:nth-child(1){height:35%;animation-delay:0s}
+.proj-video .wave-bars i:nth-child(2){height:70%;animation-delay:.18s}
+.proj-video .wave-bars i:nth-child(3){height:100%;animation-delay:.36s}
+.proj-video .wave-bars i:nth-child(4){height:60%;animation-delay:.54s}
+.proj-video .wave-bars i:nth-child(5){height:40%;animation-delay:.72s}
+/* 真实视频卡：嵌入 <video> */
+.proj-video.real{border:none;background:#000;display:block}
+.proj-video.real video{
+  width:100%;height:100%;object-fit:contain;display:block;background:#000;
+}
+.proj-poster-links{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:10px}
+.proj-poster-link{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11.5px;letter-spacing:1.5px;color:var(--sea-light);
+  border-bottom:1px dashed rgba(127,179,204,0.5);padding-bottom:3px;
+  transition:color .3s;cursor:pointer;text-decoration:none;
+}
+.proj-poster-link:hover{color:#fff}
+/* 展板页内查看弹窗 */
+.poster-lightbox{
+  position:fixed;inset:0;z-index:900;
+  background:rgba(3,10,18,0.94);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:48px 20px 32px;
+  opacity:0;visibility:hidden;transition:opacity .35s ease,visibility .35s;
+}
+.poster-lightbox.open{opacity:1;visibility:visible}
+.poster-lightbox img{
+  max-width:min(92vw,860px);max-height:76vh;object-fit:contain;
+  border:1px solid rgba(127,179,204,0.35);
+  box-shadow:0 18px 60px rgba(0,0,0,0.65);
+  transform:scale(0.96);transition:transform .35s ease;
+}
+.poster-lightbox.open img{transform:scale(1)}
+.poster-lightbox .lb-close{
+  position:absolute;top:18px;right:22px;z-index:3;
+  width:40px;height:40px;border-radius:50%;
+  border:1px solid rgba(255,255,255,0.35);background:rgba(255,255,255,0.06);
+  color:#fff;font-size:20px;line-height:38px;text-align:center;cursor:pointer;
+  transition:background .3s,border-color .3s;
+}
+.poster-lightbox .lb-close:hover{background:rgba(255,255,255,0.18);border-color:#fff}
+.poster-lightbox .lb-caption{
+  margin-top:14px;font-size:11.5px;letter-spacing:2px;color:var(--sea-light);
+}
+.poster-lightbox .lb-count{
+  margin-top:6px;font-size:11px;letter-spacing:3px;color:rgba(255,255,255,0.45);
+}
+.poster-lightbox .lb-nav{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:3;
+  width:44px;height:44px;border-radius:50%;
+  border:1px solid rgba(255,255,255,0.35);background:rgba(255,255,255,0.06);
+  color:#fff;font-size:26px;line-height:40px;text-align:center;cursor:pointer;
+  transition:background .3s,border-color .3s;padding:0;
+}
+.poster-lightbox .lb-nav:hover{background:rgba(255,255,255,0.18);border-color:#fff}
+.poster-lightbox .lb-prev{left:20px}
+.poster-lightbox .lb-next{right:20px}
+@media (max-width:640px){
+  .poster-lightbox .lb-nav{width:36px;height:36px;font-size:20px;line-height:33px}
+  .poster-lightbox .lb-prev{left:8px}
+  .poster-lightbox .lb-next{right:8px}
+}
+@keyframes waveBar{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}
+.proj-tag-row{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.proj-index{
+  font-family:var(--serif);font-size:13px;color:var(--sea-light);
+  letter-spacing:2px;margin-right:4px;
+}
+.proj-type{font-size:10.5px;padding:2px 9px;letter-spacing:1px;font-weight:600;
+  border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.8)}
+.proj-title{font-family:var(--serif);font-size:19px;font-weight:600;color:#fff;margin-bottom:8px;letter-spacing:1px}
+.proj-desc{font-size:13px;line-height:1.9;color:var(--ink-soft)}
+.proj-desc + .proj-desc{margin-top:9px}
+.proj-desc b{color:var(--ink);font-weight:600}
+.proj-tech{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+.tech-tag{font-size:11px;padding:2px 9px;color:var(--ink-soft);border:1px solid rgba(255,255,255,0.16)}
+.proj-slide.placeholder .proj-desc{color:var(--ink-mute)}
+
+/* 左右箭头 */
+.proj-arrow{
+  position:absolute;top:38%;z-index:5;
+  width:46px;height:46px;border-radius:50%;
+  border:1px solid rgba(255,255,255,0.35);
+  background:rgba(6,37,64,0.45);
+  backdrop-filter:blur(8px);
+  color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .35s;
+}
+.proj-arrow:hover{
+  background:rgba(127,179,204,0.3);
+  border-color:rgba(127,179,204,0.7);
+  box-shadow:0 0 22px rgba(127,179,204,0.35);
+}
+.proj-arrow.prev{left:max(16px,calc((100vw - 1040px)/2 - 10px))}
+.proj-arrow.next{right:max(16px,calc((100vw - 1040px)/2 - 10px))}
+/* 指示器 */
+.proj-dots{
+  display:flex;gap:10px;justify-content:center;margin-top:8px;
+}
+.proj-dot{
+  width:26px;height:3px;border:none;cursor:pointer;padding:0;
+  background:rgba(255,255,255,0.22);transition:all .4s;
+}
+.proj-dot.active{background:var(--sea-light);box-shadow:0 0 10px rgba(127,179,204,0.6);width:40px}
+.proj-hint{
+  text-align:center;font-size:11px;color:var(--ink-mute);
+  letter-spacing:4px;margin-top:14px;
+}
+
+/* ============================================================
+   04 CONTACT — 汇入江海
+============================================================ */
+#contact{text-align:center}
+#contact .section-head{display:block;text-align:center}
+#contact .section-no{color:rgba(255,255,255,0.14)}
+#contact .section-head .sub{justify-content:center}
+.contact-lead{
+  font-size:14px;color:var(--ink-soft);letter-spacing:2px;
+  max-width:540px;margin:14px auto 0;line-height:2.1;
+}
+.contact-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:16px;max-width:760px;margin:50px auto 0;
+}
+.contact-card{
+  padding:24px 18px;
+  background:var(--glass);border:1px solid var(--glass-bd);
+  backdrop-filter:blur(10px);
+  transition:all .4s;
+}
+.contact-card:hover{
+  background:var(--glass-2);
+  border-color:rgba(127,179,204,0.5);
+  transform:translateY(-4px);
+  box-shadow:0 12px 36px rgba(6,37,64,0.4);
+}
+.contact-label{font-size:11px;letter-spacing:4px;color:var(--ink-mute);margin-bottom:11px}
+.contact-value{font-size:14px;color:#fff;letter-spacing:1px;word-break:break-all;display:block}
+a.contact-value:hover{color:var(--sea-mist)}
+.contact-hint{font-size:10.5px;color:var(--ink-mute);letter-spacing:2px;margin-top:9px;opacity:.7;transition:all .3s}
+.contact-copy{cursor:pointer}
+.contact-copy:hover .contact-hint{color:var(--sea-mist);opacity:1}
+.contact-bottom{
+  margin-top:62px;padding-top:28px;border-top:1px solid rgba(255,255,255,0.14);
+  font-size:11px;color:var(--ink-mute);letter-spacing:4px;
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  max-width:760px;margin-left:auto;margin-right:auto;
+}
+
+/* ============================================================
+   响应式
+============================================================ */
+@media (max-width:900px){
+  .nav-links{
+    position:fixed;top:62px;left:0;right:0;
+    flex-direction:column;background:rgba(6,25,40,0.96);
+    backdrop-filter:blur(16px);
+    padding:16px 0;display:none;
+    border-bottom:1px solid rgba(255,255,255,0.12);
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{padding:14px 30px;font-size:15px}
+  .nav-links a.active::after{display:none}
+  .nav-toggle{display:block}
+  section{padding:88px 22px}
+  .section-head{grid-template-columns:1fr;gap:8px;align-items:start;margin-bottom:44px}
+  .section-no{font-size:50px}
+  .about-grid{grid-template-columns:1fr;gap:40px}
+  .about-left{position:static;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .about-stats{text-align:left;width:100%;max-width:360px}
+  .exp-layout{grid-template-columns:1fr;gap:30px}
+  .exp-nav{position:static;flex-direction:row;overflow-x:auto;gap:10px;padding-bottom:6px;scrollbar-width:none}
+  .exp-nav::-webkit-scrollbar{display:none}
+  .exp-nav-item{flex:0 0 auto;padding:12px 14px}
+  .exp-nav-item:hover,.exp-nav-item.active{transform:none}
+  .company-logo{width:46px;height:46px;font-size:14px}
+  .exp-nav-hint{display:none}
+  .proj-arrow{display:none}
+  .proj-slide{flex:0 0 84vw;padding:16px 16px 22px}
+  #projects{padding-left:0;padding-right:0}
+  #projects .section-head{padding:0 22px}
+  .proj-track{padding:10px 22px 22px}
+  .hero-title{letter-spacing:3px}
+  .hero-motto{letter-spacing:4px}
+  .hero-motto::before,.hero-motto::after{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms !important;transition-duration:0.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ 底图层：随滚动交叉切换 ============ -->
+<div class="bg-stack">
+  <div class="bg-layer on" data-for="home"></div>
+  <div class="bg-layer" data-for="about"></div>
+  <div class="bg-layer" data-for="experience"></div>
+  <div class="bg-layer" data-for="projects"></div>
+  <div class="bg-layer" data-for="contact"></div>
+</div>
+
+<!-- ============ NAV 玻璃态目录 ============ -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#home" class="nav-logo"><i></i>NIE QI</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home" data-target="home">首页</a></li>
+      <li><a href="#about" data-target="about">关于</a></li>
+      <li><a href="#experience" data-target="experience">经历</a></li>
+      <li><a href="#projects" data-target="projects">作品</a></li>
+      <li><a href="#contact" data-target="contact">联系</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="菜单">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5">
+        <line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<main>
+<!-- ============ HERO：居中欢迎页 ============ -->
+<section id="home" data-bg="home">
+  <div class="hero-content">
+    <div class="hero-eyebrow">NIE QI · PORTFOLIO · 2026</div>
+    <h1 class="hero-title">欢迎来到聂绮の个人网站</h1>
+    <div class="hero-motto-box">
+      <span class="hero-motto" id="mottoText">如水平静，像河汹涌，似海包容。</span>
+    </div>
+    <div class="hero-tags">
+      <span class="hero-tag">产品经理</span>
+      <span class="hero-tag">AI × B/C 端系统</span>
+      <span class="hero-tag">北京工业大学 · 硕士</span>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>向 下 潜 入</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- ============ 01 关于我 + 教育时间轴 ============ -->
+<section id="about" data-bg="about">
+  <div class="section-inner">
+    <div class="section-head reveal">
+      <div class="section-no">01</div>
+      <div>
+        <h2>关于我</h2>
+        <div class="sub">About · 如水般的人</div>
+      </div>
+    </div>
+    <div class="about-grid">
+      <div class="about-left reveal">
+        <div class="about-photo" title="生活照">
+          <img src="assets/life-photo.jpg?v=20260903" alt="聂绮" loading="eager" />
+        </div>
+        <div class="about-name">聂 绮</div>
+        <div class="about-role">产品经理 · 工业设计工程硕士 · 2027 届 · 中共党员</div>
+        <p class="about-intro">
+          核心能力：B&amp;C 端复杂系统设计、AI 业务场景提效、需求分析、用户调研、竞品分析、数据分析、产品迭代及项目进度管理。具备从 0 到 1 <strong>需求洞察 → 方案设计 → 原型迭代 → 推动落地</strong>的完整闭环能力。
+        </p>
+        <div class="about-stats">
+          <div class="stat">
+            <div class="stat-num">1<span style="font-size:13px">/68</span></div>
+            <div class="stat-label">本科专业排名</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">3</div>
+            <div class="stat-label">段产品实践</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">10+</div>
+            <div class="stat-label">完整模块设计</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="edu-timeline reveal reveal-d1">
+        <div class="edu-item">
+          <div class="edu-dot"></div>
+          <div class="edu-time">2024.09 — 2027.06（预计）</div>
+          <div class="edu-school">北京工业大学（211）· 硕士</div>
+          <div class="edu-major">工业设计工程 · 推免直升</div>
+          <div class="edu-detail">产品服务设计 & 信息科学技术 <b>联合培养</b>，GPA <b>90.907 / 100</b>。</div>
+          <div class="edu-detail">聚焦交互设计与 AI 产品落地方向，硕士期间累计实习<b>约一年半</b>，先后经历医疗硬件、互联网 B&C 端产品等多段实践，逐步明确产品经理的职业方向。</div>
+          <div class="edu-honors">
+            <span class="honor-tag">北京工业大学特等奖学金（2024）</span>
+            <span class="honor-tag">北京工业大学三等奖学金（2025）</span>
+          </div>
+        </div>
+        <div class="edu-item">
+          <div class="edu-dot"></div>
+          <div class="edu-time">2020.09 — 2024.06</div>
+          <div class="edu-school">南京林业大学（双一流）· 本科</div>
+          <div class="edu-major">工业设计 · 推免综合排名 <b>1 / 68</b>（专业第一保送）</div>
+          <div class="edu-detail">GPA <b>4.02 / 4.5</b>（91.94 / 100）。核心课程：交互设计原理、用户研究方法、服务设计、信息可视化、产品创新设计。</div>
+          <div class="edu-detail">熟练 <b>Figma / PS / AI / Coze / SPSS / Excel / Python / SQL</b> 等产品与数据工具。</div>
+          <div class="edu-honors">
+            <span class="honor-tag">国家奖学金（2022）</span>
+            <span class="honor-tag">校级优秀毕业生</span>
+            <span class="honor-tag">三好学生</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 实习经历：左 Logo + 右时间轴 ============ -->
+<section id="experience" data-bg="experience">
+  <div class="section-inner">
+    <div class="section-head reveal">
+      <div class="section-no">02</div>
+      <div>
+        <h2>实习经历</h2>
+        <div class="sub">Experience · 破浪前行</div>
+      </div>
+    </div>
+
+    <div class="exp-layout">
+      <!-- 左：公司 Logo 导航（占位图，可替换为真实 logo） -->
+      <div class="exp-nav reveal">
+        <div class="exp-nav-item active" data-exp-index="0">
+          <div class="company-logo has-img" title="携程 / Trip.com Group"><img src="assets/logos/ctrip.png" alt="携程"></div>
+          <div class="exp-nav-info">
+            <div class="exp-nav-company">携程集团</div>
+            <div class="exp-nav-role">产品经理 · 大住宿事业群</div>
+            <div class="exp-nav-time">2026.04 — 2026.08</div>
+          </div>
+        </div>
+        <div class="exp-nav-item" data-exp-index="1">
+          <div class="company-logo has-img" title="汽车之家"><img src="assets/logos/autohome.png" alt="汽车之家"></div>
+          <div class="exp-nav-info">
+            <div class="exp-nav-company">汽车之家</div>
+            <div class="exp-nav-role">产品经理 · 效能平台部</div>
+            <div class="exp-nav-time">2025.09 — 2026.03</div>
+          </div>
+        </div>
+        <div class="exp-nav-item" data-exp-index="2">
+          <div class="company-logo brand-text" title="慧首(北京)科技有限公司"><span style="font-size:14px">慧首</span></div>
+          <div class="exp-nav-info">
+            <div class="exp-nav-company">慧首科技</div>
+            <div class="exp-nav-role">产品助理 · 医疗养老硬件</div>
+            <div class="exp-nav-time">2024.07 — 2024.11</div>
+          </div>
+        </div>
+        <div class="exp-nav-hint">点击切换公司经历</div>
+      </div>
+
+      <!-- 右：时间轴面板 -->
+      <div class="exp-panels reveal reveal-d1">
+
+        <div class="exp-panel active" data-panel-index="0">
+          <div class="exp-panel-header">
+            <div class="exp-panel-title">携程集团 · 大住宿事业群 — 中软业务部</div>
+            <div class="exp-panel-sub">产品经理 · 新 SaaS 酒店系统重构 · 覆盖 B 端 + C 端 APP</div>
+          </div>
+          <div class="exp-panel-intro">
+            <b>项目背景：</b>旧版酒店 PMS 系统在<b>交互方式、视觉风格、流程体验</b>等多维度都已显著老化，无法匹配一线酒店员工当下的操作习惯与新员工上手成本，因此部门立项对系统做整体重构。实习期间负责其中<b>多个核心模块</b>的从 0 到 1 设计落地；同时兼顾<b>旧系统与员工 APP 的日常维护需求</b>，承接小迭代、Bug 修复与体验优化，确保过渡期业务平稳运行。
+          </div>
+          <div class="exp-timeline">
+            <div class="exp-node">
+              <div class="exp-node-dot"></div>
+              <div class="exp-node-time">2026.04 — 2026.05</div>
+              <div class="exp-node-title">发票模块 · 从 0 到 1</div>
+              <div class="exp-node-desc">面对<span style="color:var(--ink);font-weight:600;border-bottom:1px solid rgba(255,255,255,0.3)">税控盘/全电双轨并行 × 普专票 × 电子/纸质</span>的复杂度，先输出"场景 × 票种 × 开票方式"规则矩阵，再设计"消费 → 开票 → 抬头预填 → 交付 → 冲红/作废"完整闭环，定义 <b>7 种状态流转</b>、权限控制与报表日志，输出方案并落地。</div>
+            </div>
+            <div class="exp-node">
+              <div class="exp-node-dot"></div>
+              <div class="exp-node-time">2026.05 — 2026.06</div>
+              <div class="exp-node-title">夜审 · 50 步 → 30+ 标准步骤</div>
+              <div class="exp-node-desc">将旧系统依赖人工经验的 <b>50 个日终处理动作</b>重组为 <b>5 阶段 30+ 标准步骤</b>，逐个还原执行逻辑与依赖关系，定义 <b>5 类状态</b>及每步执行条件与异常处理机制，把夜间审计转化为"步骤清晰、过程可视、异常可处理、结果可追溯、历史可修正"的标准化作业。</div>
+            </div>
+            <div class="exp-node">
+              <div class="exp-node-dot"></div>
+              <div class="exp-node-time">2026.06 — 2026.07</div>
+              <div class="exp-node-title">客房协同工单模块</div>
+              <div class="exp-node-desc">原客房任务依赖口头下达易漏单错单，设计客房协同工单模块，覆盖<b>清扫、查房、客房服务</b> 3 类高频场景。打通<b>前台 PMS、主管 Web 端、员工移动端</b>三端链路，设计"前台发起 → 主管派工/排班 → 员工自助领单 → 状态同步 → 异常反馈与日志追溯"全流程方案并落地。</div>
+            </div>
+            <div class="exp-node">
+              <div class="exp-node-dot"></div>
+              <div class="exp-node-time">2026.07 — 2026.08</div>
+              <div class="exp-node-title">经营工作台 + 快捷键 + 开关配置</div>
+              <div class="exp-node-desc">为提升新系统操作效率，构建一屏式经营数据看板聚合 <b>7 类核心指标</b>；设计 <b>4 层快捷键体系</b>（高频/全局/页面/单键导航）；梳理 <b>1000+ 开关配置场景</b>，统一开关值标准。</div>
+              <div class="exp-metrics">
+                <div class="metric">参与核心模块 <b>6</b> 个</div>
+                <div class="metric">原型迭代 <b>30+</b> 轮</div>
+                <div class="metric">用例产出 <b>200+</b> 条</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="exp-panel" data-panel-index="1">
+          <div class="exp-panel-header">
+            <div class="exp-panel-title">汽车之家 · 研发与数据中心 — 效能平台部</div>
+            <div class="exp-panel-sub">产品经理 · 企业 OA 智能化升级（B&C 端 AI 效率工具 / 办公平台）</div>
+          </div>
+          <div class="exp-panel-intro">
+            <b>项目背景：</b>所在部门承接公司<b>全员级办公效率工具与协作平台</b>的迭代建设，覆盖知识库、办公 APP、内部协作平台、企业福利等内部产品的需求、设计与落地；其中知识库、AI 语音快记等产品包含面向 <b>AI 交互</b>的持续探索。
+          </div>
+          <div class="exp-timeline">
+            <div class="exp-node">
+              <div class="exp-node-dot"></div>
+              <div class="exp-node-time">2025.09 — 2026.01</div>
+              <div class="exp-node-title">知识库 AI 助理 + AI 语音快记</div>
+              <div class="exp-node-desc">负责知识库 AI 助理问答的交互优化，分析高频搜索词并聚类意图，设计"我最近浏览/编辑/创建的文档"等一键发起提问卡片，解决冷启动问题；辅助 AI 语音转写产品的模型选型，完成豆包/通义/DeepSeek 等模型横向测评，输出评估报告并持续跟进落地。</div>
+              <div class="exp-metrics">
+                <div class="metric">AI 助理月活 <b>2000+</b></div>
+                <div class="metric">累计提问 <b>5万+</b></div>
+                <div class="metric">AI 语音渗透率 <b>54% → 78%</b></div>
+              </div>
+            </div>
+            <div class="exp-node">
+              <div class="exp-node-dot"></div>
+              <div class="exp-node-time">2025.09 — 2026.03</div>
+              <div class="exp-node-title">办公 APP + 协作平台迭代</div>
+              <div class="exp-node-desc">承接公司内部办公 APP 安全升级、体验创新等多项需求迭代；独立负责 AI 快讯板块推送优化；运营用户反馈池与公司需求管理协作平台，跟踪处理用户反馈，承接并交付 <b>20+ 项</b>平台优化需求，完善需求状态跟踪机制。</div>
+              <div class="exp-metrics">
+                <div class="metric">日均推送时长 <b>2h → 30min</b></div>
+                <div class="metric">需求按时交付率 <b>→ 90%</b></div>
+              </div>
+            </div>
+            <div class="exp-node">
+              <div class="exp-node-dot"></div>
+              <div class="exp-node-time">2025.11 — 2026.01</div>
+              <div class="exp-node-title">企业福利积分兑换平台 · 0 → 1</div>
+              <div class="exp-node-desc">公司原零食水果制度数字化改革，从 0 到 1 搭建线上积分兑换平台。主导平台系统搭建，协调行政、开发测试、供应商系统开发等多方资源，完成前后端搭建、积分发放机制、商品兑换流程设计，及对账、数据看板等运营建设。</div>
+              <div class="exp-metrics">
+                <div class="metric">首周激活 <b>3000+</b> 人</div>
+                <div class="metric">福利兑换率 <b>95%</b></div>
+                <div class="metric">管理成本 <b>↓ 约 30%</b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="exp-panel" data-panel-index="2">
+          <div class="exp-panel-header">
+            <div class="exp-panel-title">慧首（北京）科技有限公司</div>
+            <div class="exp-panel-sub">产品助理 · 医疗养老硬件 & 软件 · 康复医疗机器人二代升级</div>
+          </div>
+          <div class="exp-panel-intro">
+            <b>项目背景：</b>慧首科技聚焦<b>康复医疗机器人与养老辅具</b>领域，本次主线任务是把初代康复机器人迭代为<b>二代产品</b>：集成新 AI 算法优化外观与人机交互，对接客户医院开展真实场景验证，最终完成产品发布与创新区验收。我所在小组横跨硬件迭代、软件测试与发布物料三个环节。
+          </div>
+          <div class="exp-timeline">
+            <div class="exp-node">
+              <div class="exp-node-dot"></div>
+              <div class="exp-node-time">2024.07 — 2024.08</div>
+              <div class="exp-node-title">项目管理 · 里程碑规划</div>
+              <div class="exp-node-desc">参与康复医疗机器人二代产品升级项目（集成新 AI 算法 + 外观迭代交付客户）。负责团队任务进程规划与交付节点管控，制定项目里程碑计划，协调设计、开发、测试各环节资源，确保项目按期推进。</div>
+            </div>
+            <div class="exp-node">
+              <div class="exp-node-dot"></div>
+              <div class="exp-node-time">2024.08 — 2024.10</div>
+              <div class="exp-node-title">硬件方案 + 软件测试</div>
+              <div class="exp-node-desc">硬件：负责外壳设计方案输出与多轮迭代，输出 <b>3 套外观及内部结构方案</b>，跟进供应商完成打样交付。软件：协助完成产品功能测试与性能验证，参与测试用例 <b>50+ 项</b>，输出反馈推动问题闭环。</div>
+            </div>
+            <div class="exp-node">
+              <div class="exp-node-dot"></div>
+              <div class="exp-node-time">2024.10 — 2024.11</div>
+              <div class="exp-node-title">发布物料 & 创新区验收</div>
+              <div class="exp-node-desc">完成展板等发布物料设计，通过创新区验收，助力产品成功发布。</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 项目作品：横向滑动 ============ -->
+<section id="projects" data-bg="projects">
+  <div class="section-head reveal">
+    <div class="section-no">03</div>
+    <div>
+      <h2>项目作品</h2>
+      <div class="sub">Projects · 作品即水痕</div>
+    </div>
+  </div>
+
+  <div class="proj-wrap reveal reveal-d1">
+    <button class="proj-arrow prev" id="projPrev" aria-label="上一个项目">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="proj-arrow next" id="projNext" aria-label="下一个项目">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+
+    <div class="proj-track" id="projTrack">
+      <article class="proj-slide">
+        <div class="proj-video real">
+          <video src="assets/echo.mp4?v=4" poster="assets/echo-cover.jpg?v=4" controls playsinline preload="none"></video>
+        </div>
+        <div class="proj-tag-row">
+          <span class="proj-index">01 / 05</span>
+          <span class="proj-type">C 端 · AI 情感陪伴 · 2025.08 — 2025.09</span>
+        </div>
+        <div class="proj-title">回声 ECHO · AI 宠物数字生命陪伴系统</div>
+        <p class="proj-desc">针对<b>宠物离世后主人的情感陪伴</b>需求，设计一款<b>多端交互的宠物数字生命智能陪伴系统</b>，探索 AI 在情感陪伴场景的创新应用。</p>
+        <p class="proj-desc">围绕「宠物照片 → 数字形象」的核心体验，调研并验证 <b>AI 图片转 3D、骨骼绑定动效生成</b>等技术方案，搭建从「上传图片 → 3D 模型生成 → 骨骼绑定动效 → 仿全息投影呈现」的完整工作流，<b>完成概念验证与高保真原型交付</b>。</p>
+        <div class="proj-tech">
+          <span class="tech-tag">AI 图片转 3D</span><span class="tech-tag">骨骼绑定动效</span>
+          <span class="tech-tag">全息投影呈现</span><span class="tech-tag">高保真原型</span>
+        </div>
+      </article>
+
+      <article class="proj-slide">
+        <div class="proj-video real">
+          <video src="assets/tiantan.mp4?v=4" poster="assets/tiantan-poster.jpg?v=4" controls playsinline preload="none"></video>
+        </div>
+        <div class="proj-tag-row">
+          <span class="proj-index">02 / 05</span>
+          <span class="proj-type">文旅 · 移动端 · 2024.10 — 2025.01</span>
+        </div>
+        <div class="proj-title">天坛声学美学 · 移动端交互设计</div>
+        <p class="proj-desc">聚焦天坛<b>回音壁、三音石、对话石</b>等独特声学现象，针对「声波传播不可见、现场回音体验差」两大痛点展开设计。</p>
+        <p class="proj-desc">设计以<b>多模态交互</b>为核心的移动端导览产品——通过可视化与交互技术还原声波传播路径，让用户在沉浸式体验中理解回音建筑的科学内涵与文化意蕴；完成<b>用户画像、用户旅程图、KANO 模型、服务蓝图、信息架构到高保真设计</b>的全流程。</p>
+        <div class="proj-tech">
+          <span class="tech-tag">用户调研</span><span class="tech-tag">KANO 模型</span>
+          <span class="tech-tag">服务蓝图</span><span class="tech-tag">高保真原型</span>
+        </div>
+      </article>
+
+      <article class="proj-slide">
+        <div class="proj-video real">
+          <video src="assets/vase.mp4?v=4" poster="assets/vase-cover.jpg?v=4" controls playsinline preload="none"></video>
+        </div>
+        <div class="proj-tag-row">
+          <span class="proj-index">03 / 05</span>
+          <span class="proj-type">AIGC · 工业设计</span>
+        </div>
+        <div class="proj-title">花朝器语 · AIGC 宋美学花器设计</div>
+        <p class="proj-desc">源于对<b>宋代插花美学</b>的深入研究与 AI 设计技术的创新应用——在 AIGC 工具兴起初期即开始探索，以宋代花器「简洁、典雅、和谐」的造型语言为范本。</p>
+        <p class="proj-desc">综合运用 <b>Midjourney、Stable Diffusion</b> 等生成工具，建立「<b>生成 → 筛选 → 深化</b>」的工作流，反复迭代打磨形成「花朝器语」系列花器，探索传统美学的当代表达——让眼前的器物娓娓道来，感受宋韵的绵柔静美。</p>
+        <div class="proj-tech">
+          <span class="tech-tag">Midjourney</span><span class="tech-tag">Stable Diffusion</span>
+          <span class="tech-tag">AIGC 生成设计</span><span class="tech-tag">宋代美学</span>
+        </div>
+      </article>
+
+      <article class="proj-slide">
+        <div class="proj-video real">
+          <video src="assets/sanluo.mp4?v=4" poster="assets/sanluo-cover.jpg?v=4" controls playsinline preload="none"></video>
+        </div>
+        <div class="proj-tag-row">
+          <span class="proj-index">04 / 05</span>
+          <span class="proj-type">移动端 UI 设计 · 2022.11 — 2023.01</span>
+        </div>
+        <div class="proj-title">伞落 · 油纸伞文化传播平台 APP</div>
+        <p class="proj-desc">聚焦<b>油纸伞非遗文化</b>在年轻群体中的回潮，针对市面上相关 APP<b>「定位模糊—资料不详—趣味性差」</b>三大痛点展开设计。</p>
+        <p class="proj-desc">独立设计一款面向油纸伞爱好者与传承人的文化传播平台——「伞落」，完成<b>背景调研、市场竞品分析、用户画像、情绪版、产品定位、信息架构与高保真原型</b>全流程，并围绕「浏览欣赏 — 工艺学习 — 互动分享」三类场景细化功能与页面体验，让传统文化"落地生根"。</p>
+        <div class="proj-tech">
+          <span class="tech-tag">移动端 UI</span><span class="tech-tag">情绪版设计</span>
+          <span class="tech-tag">文化 IP</span><span class="tech-tag">原型设计</span>
+        </div>
+      </article>
+
+      <article class="proj-slide">
+        <div class="proj-video real">
+          <video src="assets/jiian.mp4?v=4" poster="assets/jiian-cover.jpg?v=4" controls playsinline preload="none"></video>
+        </div>
+        <div class="proj-tag-row">
+          <span class="proj-index">05 / 05</span>
+          <span class="proj-type">产品 × 服务系统 · 2023.06 — 2023.07</span>
+        </div>
+        <div class="proj-title">脊安 · 青少年脊柱侧弯家用矫正产品及服务系统</div>
+        <p class="proj-desc">针对我国 <b>500 万中小学生脊柱侧弯</b>人群，从「患者戴支具不舒适、家长难时刻跟进、康复训练需要辅助」三大痛点出发展开设计。</p>
+        <p class="proj-desc">设计<b>智能矫正支具 + 监测问诊 APP + 科普传播</b>三位一体的家用矫正产品及服务系统，构建覆盖「筛查 — 矫正 — 跟踪 — 康复指导」的完整服务闭环。</p>
+        <div class="proj-poster-links">
+          <a class="proj-poster-link" href="assets/jiian-poster-system.jpg" data-poster="assets/jiian-poster-system.jpg" data-caption="脊安 · 服务系统展板">查看服务系统展板 →</a>
+          <a class="proj-poster-link" href="assets/jiian-poster-product.jpg" data-poster="assets/jiian-poster-product.jpg" data-caption="脊安 · 产品与交互展板">查看产品与交互展板 →</a>
+        </div>
+        <div class="proj-tech">
+          <span class="tech-tag">用户调研</span><span class="tech-tag">服务系统设计</span>
+          <span class="tech-tag">传播设计</span><span class="tech-tag">团队协作</span>
+        </div>
+      </article>
+    </div>
+
+    <div class="proj-dots" id="projDots"></div>
+    <div class="proj-hint">← 左右滑动或拖拽浏览 →</div>
+  </div>
+</section>
+
+<!-- ============ 04 联系 ============ -->
+<section id="contact" data-bg="contact">
+  <div class="section-inner">
+    <div class="section-head reveal">
+      <div class="section-no">04</div>
+      <div>
+        <h2>联系我</h2>
+        <div class="sub">Contact · 汇入江海</div>
+      </div>
+    </div>
+    <p class="contact-lead reveal">
+      无论是秋招机会、项目合作，或只是想聊聊产品与设计——欢迎随时找到我。<br>
+      每一条消息，都会认真回应。
+    </p>
+    <div class="contact-grid reveal reveal-d1">
+      <div class="contact-card">
+        <div class="contact-label">MAIL</div>
+        <a class="contact-value" href="mailto:nieqi_10@163.com">nieqi_10@163.com</a>
+        <div class="contact-hint">点击发送邮件</div>
+      </div>
+      <div class="contact-card contact-copy" id="phoneCard" title="点击复制手机号">
+        <div class="contact-label">PHONE</div>
+        <span class="contact-value" id="phoneValue">152 3852 8788</span>
+        <div class="contact-hint" id="phoneHint">点击复制号码</div>
+      </div>
+      <div class="contact-card contact-copy" id="wechatCard" title="点击复制微信号">
+        <div class="contact-label">WECHAT</div>
+        <span class="contact-value" id="wechatValue">zn15238528788</span>
+        <div class="contact-hint" id="wechatHint">点击复制微信号</div>
+      </div>
+    </div>
+    <div class="contact-bottom reveal reveal-d2">
+      <span>© 2026 聂绮</span>
+      <span>如水平静 · 像河汹涌 · 似海包容</span>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+/* ============================================================
+   1. 底图切换：滚动时交叉淡入对应背景层
+============================================================ */
+(function(){
+  var layers = document.querySelectorAll('.bg-layer');
+  var secs = document.querySelectorAll('[data-bg]');
+  function update(){
+    var mid = window.scrollY + window.innerHeight * 0.5;
+    var cur = null;
+    secs.forEach(function(s){
+      if(s.offsetTop <= mid) cur = s.getAttribute('data-bg');
+    });
+    if(!cur) cur = 'home';
+    layers.forEach(function(l){
+      l.classList.toggle('on', l.getAttribute('data-for') === cur);
+    });
+  }
+  window.addEventListener('scroll', update, {passive:true});
+  window.addEventListener('resize', update);
+  update();
+})();
+
+/* ============================================================
+   2. HERO 格言轮播
+============================================================ */
+(function(){
+  var el = document.getElementById('mottoText');
+  if(!el) return;
+  var lines = [
+    '如水平静，像河汹涌，似海包容。',
+    '静水流深，波澜不惊。',
+    '上善若水，水善利万物而不争。',
+    '心有深海，自成气象。'
+  ];
+  var i = 0;
+  setInterval(function(){
+    el.classList.add('out');
+    setTimeout(function(){
+      i = (i + 1) % lines.length;
+      el.textContent = lines[i];
+      el.classList.remove('out');
+    }, 700);
+  }, 4200);
+})();
+
+/* ============================================================
+   3. HERO 水面光斑
+============================================================ */
+(function(){
+  var canvas = document.getElementById('hero-canvas');
+  if(!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W=0,H=0, dpr=Math.min(window.devicePixelRatio||1,2);
+  var points=[];
+  var isMobile = window.matchMedia('(max-width:600px)').matches;
+  var COUNT = isMobile ? 22 : 50;
+
+  function resize(){
+    W = window.innerWidth;
+    H = window.innerHeight * 0.5;
+    canvas.style.width = W+'px'; canvas.style.height = H+'px';
+    canvas.width = W*dpr; canvas.height = H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    initPoints();
+  }
+  function initPoints(){
+    points = [];
+    for(var i=0;i<COUNT;i++){
+      points.push({
+        x: Math.random()*W,
+        y: H*0.3 + Math.random()*H*0.7,
+        r: 0.6 + Math.random()*1.5,
+        ph: Math.random()*Math.PI*2,
+        sp: 0.6 + Math.random()*1.3,
+        amp: 0.35 + Math.random()*0.55,
+        sway: 0.15 + Math.random()*0.5
+      });
+    }
+  }
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<points.length;i++){
+      var p = points[i];
+      var br = (Math.sin(t*0.001*p.sp + p.ph)*0.5 + 0.5) * p.amp;
+      var x  = p.x + Math.sin(t*0.0007 + p.ph)*p.sway*4;
+      var y  = p.y + Math.sin(t*0.0009 + p.ph*1.3)*2;
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(255,255,255,'+(br*0.5)+')';
+      ctx.arc(x, y, p.r*2.4, 0, Math.PI*2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,'+(br*0.8)+')';
+      ctx.beginPath();
+      ctx.arc(x, y, p.r, 0, Math.PI*2);
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  requestAnimationFrame(draw);
+})();
+
+/* ============================================================
+   4. 滚动 Reveal
+============================================================ */
+(function(){
+  var els = document.querySelectorAll('.reveal');
+  if(!('IntersectionObserver' in window)){
+    els.forEach(function(e){e.classList.add('visible')});
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        en.target.classList.add('visible');
+        io.unobserve(en.target);
+      }
+    });
+  },{threshold:0.1, rootMargin:'0px 0px -40px 0px'});
+  els.forEach(function(e){io.observe(e)});
+})();
+
+/* ============================================================
+   5. 导航高亮 + 滚动变实
+============================================================ */
+(function(){
+  var nav = document.getElementById('nav');
+  var sections = ['home','about','experience','projects','contact'];
+  var links = {};
+  document.querySelectorAll('.nav-links a[data-target]').forEach(function(a){
+    links[a.getAttribute('data-target')] = a;
+  });
+  function onScroll(){
+    if(window.scrollY > 30) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+    var y = window.scrollY + 130;
+    var cur = null;
+    for(var i=0;i<sections.length;i++){
+      var s = document.getElementById(sections[i]);
+      if(s && s.offsetTop <= y) cur = sections[i];
+    }
+    Object.keys(links).forEach(function(k){
+      if(k === cur) links[k].classList.add('active');
+      else links[k].classList.remove('active');
+    });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+
+/* ============================================================
+   6. 实习经历：点击左侧 Logo / 右侧面板左右滑动 切换公司
+============================================================ */
+(function(){
+  var items = document.querySelectorAll('.exp-nav-item');
+  var panels = document.querySelectorAll('.exp-panel');
+  var wrap = document.querySelector('.exp-panels');
+  var cur = 0;
+
+  function show(idx){
+    if(idx < 0) idx = items.length - 1;
+    if(idx >= items.length) idx = 0;
+    cur = idx;
+    items.forEach(function(x,i){ x.classList.toggle('active', i===idx); });
+    panels.forEach(function(p,i){ p.classList.toggle('active', i===idx); });
+    /* 选中的公司标签滚动到标签条可视区域中间（移动端横向标签条） */
+    if(items[idx] && items[idx].scrollIntoView){
+      items[idx].scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+    }
+  }
+
+  items.forEach(function(it){
+    it.addEventListener('click', function(){
+      var idx = parseInt(it.getAttribute('data-exp-index'), 10) || 0;
+      show(idx);
+      /* 切换后回到该模块内容顶部，便于从头了解这家公司 */
+      var target = panels[idx];
+      if(target && target.scrollIntoView){
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+    });
+  });
+
+  /* 移动端：在右侧介绍区域左右滑动切换公司 */
+  if(wrap && 'ontouchstart' in window){
+    var sx = 0, sy = 0, tracking = false;
+    wrap.addEventListener('touchstart', function(e){
+      sx = e.touches[0].clientX;
+      sy = e.touches[0].clientY;
+      tracking = true;
+    }, {passive:true});
+    wrap.addEventListener('touchend', function(e){
+      if(!tracking) return;
+      tracking = false;
+      var dx = e.changedTouches[0].clientX - sx;
+      var dy = e.changedTouches[0].clientY - sy;
+      if(Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5){
+        show(dx < 0 ? cur + 1 : cur - 1);
+      }
+    }, {passive:true});
+    wrap.addEventListener('touchcancel', function(){ tracking = false; }, {passive:true});
+  }
+})();
+
+/* ============================================================
+   7. 项目横向滑动：箭头 + 拖拽 + 指示器
+============================================================ */
+(function(){
+  var track = document.getElementById('projTrack');
+  if(!track) return;
+  var slides = track.querySelectorAll('.proj-slide');
+  var prev = document.getElementById('projPrev');
+  var next = document.getElementById('projNext');
+  var dotsWrap = document.getElementById('projDots');
+  var dots = [];
+
+  /* 指示器 */
+  slides.forEach(function(s,i){
+    var d = document.createElement('button');
+    d.className = 'proj-dot' + (i===0 ? ' active' : '');
+    d.setAttribute('aria-label','项目 '+(i+1));
+    d.addEventListener('click', function(){
+      track.scrollTo({left: s.offsetLeft - track.offsetLeft - (track.clientWidth - s.offsetWidth)/2, behavior:'smooth'});
+    });
+    dotsWrap.appendChild(d);
+    dots.push(d);
+  });
+
+  function step(){
+    return slides.length ? slides[0].offsetWidth + 26 : 400;
+  }
+  prev.addEventListener('click', function(){ track.scrollBy({left:-step(), behavior:'smooth'}); });
+  next.addEventListener('click', function(){ track.scrollBy({left: step(), behavior:'smooth'}); });
+
+  /* 当前激活页指示 */
+  var ticking = false;
+  function updateDots(){
+    var center = track.scrollLeft + track.clientWidth/2;
+    var cur = 0, best = Infinity;
+    slides.forEach(function(s,i){
+      var sc = s.offsetLeft - track.offsetLeft + s.offsetWidth/2;
+      var d = Math.abs(sc - center);
+      if(d < best){ best = d; cur = i; }
+    });
+    dots.forEach(function(d,i){ d.classList.toggle('active', i===cur); });
+    ticking = false;
+  }
+  track.addEventListener('scroll', function(){
+    if(!ticking){ ticking = true; requestAnimationFrame(updateDots); }
+  }, {passive:true});
+  updateDots();
+
+  /* 拖拽滑动（桌面） */
+  var down=false, startX=0, startL=0, moved=false;
+  track.addEventListener('pointerdown', function(e){
+    if(e.pointerType !== 'mouse') return;
+    down = true; moved = false;
+    startX = e.clientX; startL = track.scrollLeft;
+    track.classList.add('dragging');
+  });
+  window.addEventListener('pointermove', function(e){
+    if(!down) return;
+    var dx = e.clientX - startX;
+    if(Math.abs(dx) > 4) moved = true;
+    track.scrollLeft = startL - dx;
+  });
+  window.addEventListener('pointerup', function(){
+    if(!down) return;
+    down = false;
+    track.classList.remove('dragging');
+  });
+  /* 防止拖拽时误触发点击 */
+  track.addEventListener('click', function(e){
+    if(moved){ e.preventDefault(); e.stopPropagation(); moved=false; }
+  }, true);
+
+  /* 键盘左右 */
+  document.addEventListener('keydown', function(e){
+    var r = track.getBoundingClientRect();
+    var visible = r.top < window.innerHeight && r.bottom > 0;
+    if(!visible) return;
+    if(e.key === 'ArrowLeft') track.scrollBy({left:-step(), behavior:'smooth'});
+    if(e.key === 'ArrowRight') track.scrollBy({left: step(), behavior:'smooth'});
+  });
+})();
+
+/* ============================================================
+   8. 移动端汉堡菜单
+============================================================ */
+(function(){
+  var toggle = document.getElementById('navToggle');
+  var list = document.getElementById('navLinks');
+  if(!toggle) return;
+  toggle.addEventListener('click', function(){ list.classList.toggle('open'); });
+  list.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ list.classList.remove('open'); });
+  });
+  /* 滑动页面时自动收起导航列表 */
+  var scroller = document.querySelector('.scroll-container') || window;
+  var hideNav = function(){ list.classList.remove('open'); };
+  scroller.addEventListener('scroll', hideNav, {passive:true});
+  window.addEventListener('scroll', hideNav, {passive:true});
+  document.addEventListener('touchmove', hideNav, {passive:true});
+})();
+
+/* ============================================================
+   9. 联系卡片点击复制（手机 / 微信 共用同一套逻辑）
+============================================================ */
+(function(){
+  function bindCopy(opts){
+    var card = document.getElementById(opts.cardId);
+    var value = document.getElementById(opts.valueId);
+    var hint = document.getElementById(opts.hintId);
+    if(!card || !value) return;
+    card.addEventListener('click', function(){
+      var txt = value.textContent.replace(/\s+/g,'');
+      function ok(){
+        hint.textContent = '已复制 ✓';
+        hint.style.color = 'var(--sea-mist)';
+        toast(opts.toastMsg + '：' + txt);
+        setTimeout(function(){
+          hint.textContent = opts.defaultHint;
+          hint.style.color = '';
+        }, 2000);
+      }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(ok).catch(fallback);
+      } else { fallback(); }
+      function fallback(){
+        var ta = document.createElement('textarea');
+        ta.value = txt;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try{ document.execCommand('copy'); ok(); }catch(e){}
+        document.body.removeChild(ta);
+      }
+    });
+  }
+  bindCopy({cardId:'phoneCard',  valueId:'phoneValue',  hintId:'phoneHint',
+            defaultHint:'点击复制号码',  toastMsg:'手机号已复制'});
+  bindCopy({cardId:'wechatCard', valueId:'wechatValue', hintId:'wechatHint',
+            defaultHint:'点击复制微信号', toastMsg:'微信号已复制'});
+
+  function toast(msg){
+    var t = document.getElementById('copyToast');
+    if(!t){
+      t = document.createElement('div');
+      t.id = 'copyToast';
+      t.style.cssText = 'position:fixed;left:50%;bottom:48px;transform:translateX(-50%) translateY(16px);' +
+        'background:rgba(10,30,48,0.88);backdrop-filter:blur(8px);color:#eaf6ff;' +
+        'padding:11px 22px;border-radius:999px;font-size:13px;letter-spacing:1px;' +
+        'border:1px solid rgba(255,255,255,0.18);opacity:0;pointer-events:none;' +
+        'transition:all .45s cubic-bezier(.22,.61,.36,1);z-index:9999;';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    requestAnimationFrame(function(){
+      t.style.opacity = '1';
+      t.style.transform = 'translateX(-50%) translateY(0)';
+    });
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function(){
+      t.style.opacity = '0';
+      t.style.transform = 'translateX(-50%) translateY(16px)';
+    }, 2200);
+  }
+})();
+</script>
+
+<!-- 展板页内查看弹窗 -->
+<div class="poster-lightbox" id="posterLightbox" role="dialog" aria-modal="true">
+  <button class="lb-close" aria-label="关闭展板">✕</button>
+  <button class="lb-nav lb-prev" aria-label="上一张">‹</button>
+  <button class="lb-nav lb-next" aria-label="下一张">›</button>
+  <img class="lb-img" src="" alt="展板大图"/>
+  <div class="lb-caption"></div>
+  <div class="lb-count"></div>
+</div>
+
+<script>
+/* ============================================================
+   10. 展板页内查看（lightbox，支持上一张/下一张切换）
+============================================================ */
+(function(){
+  var lb = document.getElementById('posterLightbox');
+  if(!lb) return;
+  var img = lb.querySelector('.lb-img');
+  var cap = lb.querySelector('.lb-caption');
+  var cnt = lb.querySelector('.lb-count');
+  var posters = [];
+  var cur = 0;
+
+  document.querySelectorAll('.proj-poster-link[data-poster]').forEach(function(a, i){
+    posters.push({src:a.getAttribute('data-poster'), caption:a.getAttribute('data-caption')||''});
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      open(i);
+    });
+  });
+  if(!posters.length) return;
+
+  function render(){
+    var p = posters[cur];
+    img.src = p.src;
+    cap.textContent = p.caption;
+    cnt.textContent = (cur + 1) + ' / ' + posters.length;
+  }
+  function open(i){
+    cur = i;
+    render();
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function close(){
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(function(){ if(!lb.classList.contains('open')) img.src = ''; }, 400);
+  }
+  function step(d){
+    cur = (cur + d + posters.length) % posters.length;
+    render();
+  }
+
+  lb.querySelector('.lb-close').addEventListener('click', close);
+  lb.querySelector('.lb-prev').addEventListener('click', function(e){ e.stopPropagation(); step(-1); });
+  lb.querySelector('.lb-next').addEventListener('click', function(e){ e.stopPropagation(); step(1); });
+  lb.addEventListener('click', function(e){ if(e.target === lb) close(); });
+  document.addEventListener('keydown', function(e){
+    if(!lb.classList.contains('open')) return;
+    if(e.key === 'Escape') close();
+    else if(e.key === 'ArrowLeft') step(-1);
+    else if(e.key === 'ArrowRight') step(1);
+  });
+})();
+
+/* ============================================================
+   11. 视频体验：单实例播放 + 后台预取（支持进度拖拽）
+       服务器不支持 Range 请求，直接拖进度条无效。
+       方案：播放照常流式进行、零等待；首次播放的同时后台
+       把整个视频取回，完成后无缝切换到本地 Blob 源并恢复
+       播放进度——此后进度条可任意拖拽。
+============================================================ */
+(function(){
+  var videos = Array.prototype.slice.call(document.querySelectorAll('.proj-video video'));
+
+  /* 同一时间只允许一个视频在播放 */
+  videos.forEach(function(v){
+    v.addEventListener('play', function(){
+      videos.forEach(function(o){
+        if(o !== v && !o.paused) o.pause();
+      });
+    });
+  });
+
+  /* 后台预取 + 无缝切换本地源 */
+  videos.forEach(function(v){
+    var started = false;
+    v.addEventListener('play', function(){
+      if(started || v.dataset.blobReady === '1') return;
+      started = true;
+      var url = v.currentSrc || v.src;
+      fetch(url).then(function(r){
+        if(!r.ok) throw new Error(r.status);
+        return r.blob();
+      }).then(function(blob){
+        if(v.dataset.blobReady === '1') return;
+        var t = v.currentTime || 0;
+        var wasPlaying = !v.paused && !v.ended;
+        v.dataset.blobReady = '1';
+        v.src = URL.createObjectURL(blob);
+        var onMeta = function(){
+          v.removeEventListener('loadedmetadata', onMeta);
+          try{ v.currentTime = t; }catch(e){}
+          if(wasPlaying) v.play().catch(function(){});
+        };
+        v.addEventListener('loadedmetadata', onMeta);
+        v.load();
+      }).catch(function(){
+        /* 预取失败：继续流式播放，仅进度拖拽受限 */
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
